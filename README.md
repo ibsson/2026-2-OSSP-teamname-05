@@ -29,3 +29,32 @@
 - DB passwords
 - venv/
 - model files such as .pt, .pkl
+
+- main에는 직접 push 금지.
+각자 개인 branch에서 작업.
+작업 완료 후 개인 branch → 파트 branch로 Pull Request.
+파트 branch 테스트 후 main으로 Pull Request.
+
+프론트는 frontend/이름 branch
+백엔드는 backend/이름 branch
+중증도 모델은 ktas/이름 branch
+병상 예측은 prediction/이름 branch
+
+예를 들어 프론트 팀원이 작업 시작할 때:
+
+git clone https://github.com/ibsson/2026-2-OSSP-teamname-05.git
+cd 2026-2-OSSP-teamname-05
+
+git checkout frontend
+git pull origin frontend
+git checkout -b frontend/팀원이름
+
+작업 끝나면:
+
+git add .
+git commit -m "Add frontend main page"
+git push origin frontend/팀원이름
+
+그다음 GitHub에서:
+
+frontend/팀원이름 → frontend
