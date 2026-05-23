@@ -1,0 +1,29 @@
+# secret files
+.env
+*.pem
+*.key
+
+# python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# runtime data
+data/realtime_bed_history.csv
+data/latest_multihorizon_predictions.csv
+data/pending_multihorizon_predictions.csv
+data/multihorizon_validation_results.csv
+
+# model artifacts
+models/
+*.pt
+*.pkl
+
+# logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
