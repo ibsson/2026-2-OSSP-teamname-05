@@ -1,0 +1,9 @@
+pandas
+numpy
+requests
+python-dotenv
+sqlalchemy
+psycopg2-binary
+torch
+scikit-learn
+joblib

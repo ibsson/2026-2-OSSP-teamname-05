@@ -1,29 +1,78 @@
-# secret files
+# ============================================================
+# Secret files
+# ============================================================
 .env
 *.pem
 *.key
+*.crt
 
-# python
+# prediction worker secret files
+prediction_worker/.env
+
+
+# ============================================================
+# Python virtual environments
+# ============================================================
 venv/
 .venv/
+env/
+ENV/
+
+prediction_worker/venv/
+prediction_worker/.venv/
+
+
+# ============================================================
+# Python cache
+# ============================================================
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.pytest_cache/
 
-# runtime data
+
+# ============================================================
+# Runtime data
+# ============================================================
 data/realtime_bed_history.csv
 data/latest_multihorizon_predictions.csv
 data/pending_multihorizon_predictions.csv
 data/multihorizon_validation_results.csv
 
-# model artifacts
-models/
-*.pt
-*.pkl
+prediction_worker/data/realtime_bed_history.csv
+prediction_worker/data/latest_multihorizon_predictions.csv
+prediction_worker/data/pending_multihorizon_predictions.csv
+prediction_worker/data/multihorizon_validation_results.csv
 
-# logs
+
+# ============================================================
+# Model artifacts
+# ============================================================
+models/
+prediction_worker/models/
+
+*.pt
+*.pth
+*.pkl
+*.joblib
+
+
+# ============================================================
+# Logs
+# ============================================================
 *.log
 
-# OS
+
+# ============================================================
+# Jupyter / Colab
+# ============================================================
+.ipynb_checkpoints/
+
+
+# ============================================================
+# OS files
+# ============================================================
 .DS_Store
 Thumbs.db
+desktop.ini
