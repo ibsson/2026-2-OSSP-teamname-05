@@ -1,0 +1,7 @@
+{
+  "threshold_k4": 0.73,
+  "threshold_k5": 0.74,
+  "basis": "calib K3 under-triage ≤ 2.7% 기준으로 탐색. calib→test gap 1.55%p 보정 적용. Epoch 6 모델 기준.",
+  "calib_target_rate": 0.027,
+  "epoch": 6
+}
