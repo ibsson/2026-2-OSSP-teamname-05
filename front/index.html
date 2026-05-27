@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>응급 병원 매칭</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+  <div id="introOverlay" class="intro-overlay">
+
+    <div class="intro-card">
+
+      <div class="intro-icon">
+        🚑
+      </div>
+
+      <h1>
+        응급 병원 매칭 서비스
+      </h1>
+
+      <p>
+        본 서비스는 AI 기반 응급 병원 추천 시스템입니다.
+      </p>
+
+      <ul>
+        <li>증상 분석 결과는 참고용입니다.</li>
+        <li>정확한 진단은 의료진 상담이 필요합니다.</li>
+        <li>위급 상황 시 즉시 119에 신고하세요.</li>
+        <li>위치 권한 허용이 필요합니다.</li>
+      </ul>
+
+      <button id="startServiceBtn">
+        서비스 시작하기
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="full-screen-container">
+<body>
+  <div class="full-screen-container">
+    <div id="map" class="map-bg"></div>
+    <button id="currentLocationBtn" class="top-right-float">현재 위치</button>
+
+    <!-- 증상 입력 오버레이 -->
+    <div id="symptomSection" class="overlay-panel">
+      <div class="symptom-content">
+        <!-- 상단 헤더 영역 -->
+        <div class="header-area">
+          <div class="main-icon-circle">❤️</div>
+          <h1 class="main-title">응급 병원 매칭</h1>
+          <p class="sub-title">증상을 입력하시면 AI가 분석하여 최적의 병원을 추천해드립니다</p>
+        </div>
+
+        <!-- 메인 카드 섹션 -->
+        <div class="white-card">
+          <h3 class="symptom-label">진단 대상 선택</h3>
+          <div class="target-selection">
+            <button class="target-card pediatric-card active" data-target="pediatric">
+              <div class="target-icon">👶</div>
+              <div class="target-name">소아</div>
+              <div class="target-desc">15세 미만</div>
+            </button>
+            <button class="target-card adult-card" data-target="adult">
+              <div class="target-icon">👤</div>
+              <div class="target-name">성인</div>
+              <div class="target-desc">15세 이상</div>
+            </button>
+          </div>
+
+          <h3 class="label-text">현재 증상을 자세히 설명해주세요</h3>
+          <div class="textarea-wrapper">
+            <textarea id="symptomInput" placeholder="예: 가슴이 심하게 아프고 호흡이 곤란해요..."></textarea>
+          </div>
+
+          <div class="emergency-banner">
+            <span class="info-circle">⚠️</span>
+            <p>생명이 위급한 경우 즉시 119에 전화하세요</p>
+          </div>
+        </div>
+
+        <!-- 분석 버튼 -->
+        <button id="analyzeBtn" class="analyze-submit-btn" disabled>증상 분석하기</button>
+
+        <!-- 예시 증상 섹션 -->
+        <div class="example-section">
+          <p class="example-label">예시 증상 (클릭하여 입력)</p>
+          <div class="example-grid">
+            <button class="ex-item">가슴이 심하게 아파요</button>
+            <button class="ex-item">호흡이 곤란하고 어지러워요</button>
+            <button class="ex-item">갑자기 팔다리에 힘이 없어요</button>
+            <button class="ex-item">머리가 깨질 듯이 아파요</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 탭 바 -->
+    <div class="bottom-tab-bar">
+      <button id="goSymptom" class="tab-item active">
+        <span class="tab-icon">📄</span> 증상 입력
+      </button>
+      <button id="goMap" class="tab-item">
+        <span class="tab-icon">🗺️</span> 지도 보기
+      </button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
