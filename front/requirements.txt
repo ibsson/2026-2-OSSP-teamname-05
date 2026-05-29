@@ -5,4 +5,8 @@ requests==2.32.4
 fastapi==0.136.1
 uvicorn==0.47.0
 httpx==0.28.1
+<<<<<<< HEAD
 python-dotenv==1.1.1
+=======
+python-dotenv==1.1.1
+>>>>>>> 91a3478307a94a4d3fc4f07644e206003a947ad1
