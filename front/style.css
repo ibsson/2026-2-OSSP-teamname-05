@@ -1,0 +1,835 @@
+* { box-sizing: border-box; font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%); background-attachment: fixed; }
+
+.full-screen-container { position: relative; width: 100%; height: 100%; }
+.map-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+/* 현재 위치 버튼 */
+.top-right-float {
+  position: absolute; top: 20px; right: 20px; z-index: 10;
+  padding: 10px 18px; background: white; border: none; border-radius: 12px;
+  font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;
+}
+
+/* 하단 탭 바 (이미지 스타일 반영) */
+.bottom-tab-bar {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100;
+  display: flex; background: white; padding: 6px; border-radius: 50px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); border: 1px solid #f1f5f9;
+}
+.tab-item {
+  display: flex; align-items: center; gap: 8px; padding: 12px 20px;
+  border: none; border-radius: 40px; background: transparent;
+  font-weight: 700; color: #475569; cursor: pointer; transition: 0.3s;
+}
+.tab-item#goMap.active { background: #0ea5e9; color: white; }
+.tab-item#goSymptom.active { background: #f97316; color: white; } /* 오렌지색 계열 반영 */
+
+/* 증상 입력 오버레이 */
+.overlay-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%); background-attachment: fixed; display: flex; justify-content: center; align-items: flex-start; overflow-y: scroll; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.hidden { display: none !important; }
+.symptom-content { width: 100%; max-width: 520px; padding: 40px 20px calc(220px + env(safe-area-inset-bottom, 0px)); }
+
+/* 헤더 영역 */
+.header-area { text-align: center; margin-bottom: 30px; }
+.main-icon-circle { width: 60px; height: 60px; background: linear-gradient(135deg, #ff8c42, #ff5e62); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; box-shadow: 0 8px 16px rgba(255, 94, 98, 0.3); }
+.main-title { font-size: 28px; font-weight: 800; color: #1e293b; margin: 0 0 10px; }
+.sub-title { font-size: 14px; color: #64748b; font-weight: 500; }
+
+/* 카드 섹션 */
+.white-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); margin-bottom: 20px; }
+.label-text { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 16px; }
+
+/* 대상 선택 버튼 */
+.target-selection { display: flex; gap: 14px; margin-bottom: 24px; }
+.target-card { flex: 1; padding: 24px 10px; border: 1.5px solid #f1f5f9; border-radius: 16px; background: white; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; }
+.target-icon { font-size: 24px; margin-bottom: 8px; color: #94a3b8; }
+.target-name { font-size: 16px; font-weight: 700; color: #1e293b; }
+.target-desc { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+.pediatric-card.active { border-color: #9333ea; background: #f5f3ff; transform: scale(1.05); }
+.pediatric-card.active .target-icon, .pediatric-card.active .target-name { color: #9333ea; }
+.adult-card.active { border-color: #2563eb; background: #eff6ff; transform: scale(1.05); }
+.adult-card.active .target-icon, .adult-card.active .target-name { color: #2563eb; }
+
+/* 텍스트 영역 */
+.textarea-wrapper { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1.5px solid transparent; transition: 0.2s; }
+.textarea-wrapper:focus-within { border-color: #f87171; background: white; box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.1); }
+textarea { width: 100%; height: 120px; border: none; outline: none; background: transparent; font-size: 15px; color: #334155; resize: none; }
+
+/* 배너 */
+.emergency-banner { margin-top: 20px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #92400e; font-weight: 600; }
+
+/* 분석 버튼 */
+.analyze-submit-btn { width: 100%; padding: 18px; border: none; border-radius: 14px; background: #e2e8f0; color: #94a3b8; font-size: 16px; font-weight: 700; cursor: not-allowed; transition: 0.3s; }
+.analyze-submit-btn.ready { background: #f87171; color: white; cursor: pointer; box-shadow: 0 8px 20px rgba(248, 113, 113, 0.2); }
+
+/* 예시 증상 */
+.example-section { margin-top: 30px; text-align: center; }
+.example-label { font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 14px; }
+.example-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ex-item { padding: 12px; background: white; border: 1px solid #f1f5f9; border-radius: 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.ex-item:hover { background: #f8fafc; border-color: #e2e8f0; }
+
+.ktas-result-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 99999;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 40px 20px 60px;
+}
+
+.ktas-result-card {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 28px;
+  padding: 24px 20px 24px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+}
+
+.ktas-icon-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ktas-icon {
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.ktas-title {
+  font-size: 40px;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.ktas-desc {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.ktas-action-box {
+  width: 100%;
+  margin: 16px auto 0;
+  padding: 18px 20px;
+  border-radius: 18px;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ktas-action-icon {
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.ktas-action-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.ktas-action-desc {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ktas-level-wrap {
+  width: 100%;
+  margin: 16px auto 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ktas-level-item {
+  flex: 1;
+  text-align: center;
+}
+
+.ktas-level-item span {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.ktas-level-item.active-item span {
+  color: #1e293b;
+  font-weight: 800;
+}
+
+.ktas-bar {
+  height: 10px;
+  border-radius: 999px;
+  opacity: 0.4;
+  transition: 0.2s;
+}
+
+.ktas-bar.active-level {
+  height: 14px;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  transform: none;
+}
+
+.ktas-bar.red { background: #f87171; }
+.ktas-bar.orange { background: #fb923c; }
+.ktas-bar.yellow { background: #fbbf24; }
+.ktas-bar.green { background: #34d399; }
+.ktas-bar.blue { background: #60a5fa; }
+
+.hospital-btn {
+  width: 100%;
+  margin: 20px auto 0;
+  display: block;
+  border: none;
+  border-radius: 18px;
+  padding: 18px;
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.25s;
+  background: linear-gradient(90deg, #10b981, #059669);
+  box-shadow: 0 8px 20px rgba(16,185,129,0.3);
+}
+
+.hospital-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16,185,129,0.4);
+}
+
+.ktas-footer {
+  margin-top: 14px;
+  line-height: 1.6;
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.hospital-list-overlay {
+
+  position: fixed;
+  inset: 0;
+
+  background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%);
+  background-attachment: fixed;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  z-index: 999999;
+}
+
+.hospital-list-page {
+
+  width: 100%;
+  max-width: 620px;
+
+  margin: 0 auto;
+
+  padding: 28px 20px 80px;
+}
+
+.hospital-list-title {
+
+  font-size: 34px;
+  font-weight: 900;
+
+  color: #0f172a;
+}
+
+.hospital-list-sub {
+
+  margin-top: 10px;
+
+  font-size: 15px;
+
+  color: #64748b;
+}
+
+.hospital-card {
+
+  margin-top: 24px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 20px;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.08);
+}
+
+.hospital-card-top {
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.hospital-tags {
+
+  display: flex;
+  gap: 8px;
+}
+
+.hospital-rank-tag {
+
+  background: #fee2e2;
+
+  color: #ef4444;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hospital-region-tag {
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hospital-name {
+
+  margin-top: 12px;
+
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.hospital-meta {
+
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+.hospital-score {
+
+  width: 82px;
+  height: 82px;
+
+  border-radius: 20px;
+
+  background: #dcfce7;
+
+  color: #059669;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.hospital-score span {
+
+  margin-top: 2px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.hospital-divider {
+
+  height: 1px;
+
+  background: #e2e8f0;
+
+  margin: 18px 0;
+}
+
+.hospital-bottom-info {
+
+  display: flex;
+  gap: 12px;
+}
+
+.hospital-info-box {
+
+  flex: 1;
+
+  background: #f8fafc;
+
+  border-radius: 16px;
+
+  padding: 12px;
+}
+
+.hospital-info-box span {
+
+  display: block;
+
+  font-size: 12px;
+
+  color: #64748b;
+}
+
+.hospital-info-box strong {
+
+  display: block;
+
+  margin-top: 6px;
+
+  font-size: 18px;
+}
+
+.route-view-btn {
+
+  width: 100%;
+
+  margin-top: 18px;
+
+  border: none;
+  border-radius: 14px;
+
+  padding: 16px;
+
+  background: linear-gradient(
+    90deg,
+    #ef4444,
+    #f97316
+  );
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.hospital-info-footer {
+
+  margin-top: 28px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 22px;
+
+  color: #475569;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.05);
+}
+
+.recall-warning {
+
+  margin-bottom: 18px;
+
+  padding: 14px 16px;
+
+  border-radius: 14px;
+
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #dc2626;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.route-info-card {
+
+  position: absolute;
+
+  right: 24px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 220px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 22px;
+
+  z-index: 99999;
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.15);
+}
+
+.route-info-card h2 {
+
+  margin: 0 0 18px;
+
+  font-size: 24px;
+  font-weight: 900;
+
+  color: #0f172a;
+}
+
+.route-info-row {
+
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 12px;
+
+  font-size: 15px;
+}
+
+.route-info-row span {
+
+  color: #64748b;
+}
+
+.route-info-row strong {
+
+  color: #ef4444;
+}
+
+.intro-overlay {
+
+  position: fixed;
+  inset: 0;
+
+  background: rgba(15,23,42,0.55);
+
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 99999999;
+}
+
+.intro-card {
+
+  width: 92%;
+  max-width: 480px;
+
+  background: white;
+
+  border-radius: 32px;
+
+  padding: 36px 30px;
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.25);
+
+  text-align: center;
+}
+
+.intro-icon {
+
+  font-size: 60px;
+
+  margin-bottom: 20px;
+}
+
+.intro-card h1 {
+
+  margin: 0;
+
+  font-size: 32px;
+  font-weight: 900;
+
+  color: #0f172a;
+}
+
+.intro-card p {
+
+  margin-top: 14px;
+
+  color: #475569;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.intro-card ul {
+
+  margin-top: 24px;
+
+  padding-left: 18px;
+
+  text-align: left;
+
+  color: #334155;
+
+  line-height: 1.9;
+
+  font-size: 14px;
+}
+
+#startServiceBtn {
+
+  width: 100%;
+
+  margin-top: 28px;
+
+  border: none;
+  border-radius: 18px;
+
+  padding: 18px;
+
+  background: linear-gradient(
+    90deg,
+    #ef4444,
+    #f97316
+  );
+
+  color: white;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 30px rgba(239,68,68,0.25);
+}
+
+.hospital-sort-wrap {
+
+  margin-top: 18px;
+
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 0;
+
+  background: #f1f5f9;
+
+  border-radius: 18px;
+
+  padding: 6px;
+
+  width: fit-content;
+
+  margin-left: auto;
+
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.05);
+}
+
+.hospital-sort-btn {
+
+  border: none;
+
+  background: transparent;
+
+  border-radius: 14px;
+
+  padding: 12px 18px;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.hospital-sort-btn.active {
+  background: white;
+  color: #ef4444;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+
+/* AI 분석 입력 증상 섹션 */
+.ai-symptom-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ai-symptom-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.ai-symptom-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+mark.symptom-highlight {
+  background: #fef9c3;
+  color: #854d0e;
+  border-radius: 4px;
+  padding: 1px 3px;
+  font-weight: 800;
+}
+
+.keyword-badge-wrap {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.keyword-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 보수적 상향 조정 박스 */
+.ktas-adjusted-box {
+  width: 100%;
+  margin: 14px auto 0;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.ktas-adjusted-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.adjusted-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.adjusted-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.adjusted-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.adjusted-reason {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #a16207;
+  font-weight: 600;
+  line-height: 1.5;
+  padding-left: 2px;
+}
+
+/* 추천 진료과 박스 */
+.ktas-dept-box {
+  width: 100%;
+  margin: 12px auto 0;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.ktas-dept-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dept-icon {
+  font-size: 15px;
+}
+
+.dept-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #166534;
+}
+
+.dept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dept-tag {
+  background: white;
+  color: #166534;
+  border: 1.5px solid #86efac;
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dept-confidence {
+  font-size: 11px;
+  color: #16a34a;
+  font-weight: 700;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+/* AI 분석 입력 증상 섹션 */
