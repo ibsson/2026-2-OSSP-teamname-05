@@ -230,102 +230,163 @@ function showResult(data) {
 
   const color = colors[data.ktas];
 
+  // AI가 분석한 증상 하이라이트 처리
+  const symptomText = document.getElementById("symptomInput").value;
+  const keywords = data.highlight_keywords || [];
+  let highlightedSymptom = symptomText;
+  keywords.forEach(kw => {
+    const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    highlightedSymptom = highlightedSymptom.replace(
+      new RegExp(escaped, 'g'),
+      `<mark class="symptom-highlight">${kw}</mark>`
+    );
+  });
+
+  // 키워드 뱃지
+  const keywordBadges = keywords.map(kw =>
+    `<span class="keyword-badge">${kw}</span>`
+  ).join("");
+
+  // 보수적 상향 조정 섹션 (adjusted가 true일 때만)
+  const originalLevelMap = { 1:"소생", 2:"응급", 3:"긴급", 4:"준긴급", 5:"비응급" };
+  const adjustedSection = data.adjusted ? `
+    <div class="ktas-adjusted-box">
+      <div class="ktas-adjusted-header">
+        <span class="adjusted-icon" style="color:#b45309;">
+          <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+          <polyline points="16 7 22 7 22 13"/>
+        </svg>
+      </span>
+        <span class="adjusted-title">보수적 판단 적용 — KTAS ${data.original_level}단계 → ${data.ktas}단계 상향</span>
+        <span class="adjusted-badge">${originalLevelMap[data.original_level]} → ${data.level_text}</span>
+      </div>
+      ${data.adjusted_reason ? `<div class="adjusted-reason">- ${data.adjusted_reason}</div>` : ""}
+    </div>
+  ` : "";
+
+  // 추천 진료과 섹션 (ktas 4,5이고 dept가 있을 때만)
+  const deptSection = (data.ktas >= 4 && data.dept) ? `
+    <div class="ktas-dept-box">
+      <div class="ktas-dept-header">
+        <span class="dept-icon" style="color:${color};">
+          <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/>
+          <path d="M8 15v1a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3v-4"/>
+          <circle cx="16" cy="10" r="2"/>
+        </svg>
+      </span>
+        <span class="dept-title">추천 진료과</span>
+      </div>
+      <div class="dept-tags">
+        ${data.dept.split(/[,\/]/).map(d =>
+          `<span class="dept-tag">${d.trim()}</span>`
+        ).join("")}
+      </div>
+    </div>
+  ` : "";
+
   const resultHTML = `
 
   <div class="ktas-result-overlay">
 
     <div class="ktas-result-card">
 
-      <div
-        class="ktas-icon-wrap"
-        style="
-          background:${color}22;
-          box-shadow:0 0 40px ${color}33;
-        "
-      >
-        <div
-          class="ktas-icon"
-          style="color:${color}"
-        >
-          ⚠
-        </div>
+      <!-- AI 분석 입력 증상 섹션 -->
+      <div class="ai-symptom-section">
+        <div class="ai-symptom-label">AI가 분석한 입력 증상</div>
+        <div class="ai-symptom-text">${highlightedSymptom}</div>
+        ${keywordBadges ? `<div class="keyword-badge-wrap">${keywordBadges}</div>` : ""}
       </div>
 
-      <h1
-        class="ktas-title"
-        style="color:${color}"
+      <div
+        class="ktas-icon-wrap"
+        style="background:${color}22; box-shadow:0 0 32px ${color}33;"
       >
+        <div class="ktas-icon" style="color:${color}">⚠</div>
+      </div>
+
+      <h1 class="ktas-title" style="color:${color}">
         KTAS ${data.ktas}단계 - ${data.level_text}
       </h1>
 
-      <p class="ktas-desc">
-        ${data.message}
-      </p>
+      <p class="ktas-desc">${data.message}${data.ktas <= 3 ? ' 필요시 진료를 받으세요' : ''}</p>
 
-      <div
-        class="ktas-action-box"
-        style="background:${color}22"
-      >
-
-        <div
-          class="ktas-action-title"
-          style="color:${color}"
+      <div class="ktas-action-box" style="background:${color}18;">
+        <div class="ktas-action-icon" style="color:${color}">
+          <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
         >
-          권장 조치
-        </div>
-
-        <div
-          class="ktas-action-desc"
-          style="color:${color}"
-        >
-          ${data.action}
-        </div>
-
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
       </div>
+        <div>
+          <div class="ktas-action-title" style="color:${color}">권장 조치</div>
+          <div class="ktas-action-desc" style="color:${color}cc">${data.action}</div>
+        </div>
+      </div>
+
+      ${adjustedSection}
+
+      ${deptSection}
 
       <div class="ktas-level-wrap">
-
-        <div class="ktas-level-item">
-          <div class="ktas-bar red"></div>
+        <div class="ktas-level-item ${data.ktas === 1 ? 'active-item' : ''}">
+          <div class="ktas-bar red ${data.ktas === 1 ? 'active-level' : ''}"></div>
           <span>1단계</span>
         </div>
-
-        <div class="ktas-level-item">
-          <div class="ktas-bar orange"></div>
+        <div class="ktas-level-item ${data.ktas === 2 ? 'active-item' : ''}">
+          <div class="ktas-bar orange ${data.ktas === 2 ? 'active-level' : ''}"></div>
           <span>2단계</span>
         </div>
-
-        <div class="ktas-level-item">
-          <div class="ktas-bar yellow"></div>
+        <div class="ktas-level-item ${data.ktas === 3 ? 'active-item' : ''}">
+          <div class="ktas-bar yellow ${data.ktas === 3 ? 'active-level' : ''}"></div>
           <span>3단계</span>
         </div>
-
-        <div class="ktas-level-item">
-          <div class="ktas-bar green"></div>
+        <div class="ktas-level-item ${data.ktas === 4 ? 'active-item' : ''}">
+          <div class="ktas-bar green ${data.ktas === 4 ? 'active-level' : ''}"></div>
           <span>4단계</span>
         </div>
-
-        <div class="ktas-level-item">
-          <div class="ktas-bar blue"></div>
+        <div class="ktas-level-item ${data.ktas === 5 ? 'active-item' : ''}">
+          <div class="ktas-bar blue ${data.ktas === 5 ? 'active-level' : ''}"></div>
           <span>5단계</span>
         </div>
-
       </div>
 
-      <button
-        class="hospital-btn"
-        onclick="showHospitalList()"
-        style="
-          background:${color};
-          box-shadow:0 12px 30px ${color}55;
-        "
-      >
+      <button class="hospital-btn" style="background: linear-gradient(90deg, ${color}, ${color}cc); box-shadow: 0 8px 20px ${color}44;" onclick="showHospitalList()">
         병원 추천 보기 →
       </button>
 
       <p class="ktas-footer">
-        * 이 분석은 참고용이며 정확한 진단은
-        의료 전문가와 상담하세요
+        * 이 분석은 참고용이며 정확한 진단은 의료 전문가와 상담하세요
       </p>
 
     </div>
@@ -384,6 +445,14 @@ function showHospitalList(sortType="ai") {
 
   hospitals = hospitals.slice(0, 3);
 
+  const subText = sortType === "distance"
+    ? "현재 위치에서 가까운 순서입니다"
+    : "도착 예상 시간 기준으로 병상 가용 가능성이 높은 순서입니다";
+
+  const rankLabels = sortType === "distance"
+    ? ["가장 가까운", "2순위", "3순위"]
+    : ["최우선 추천", "2순위", "3순위"];
+
   const html = `
 
   <div class="hospital-list-overlay">
@@ -413,13 +482,13 @@ function showHospitalList(sortType="ai") {
       "
       onclick="showHospitalList('distance')"
     >
-    ⇅ 거리순
+    ↑↓ 거리순
     </button>
   
   </div>
   
   <p class="hospital-list-sub">
-    도착 예상 시간 기준으로 병상 가용 가능성이 높은 순서입니다
+    ${subText}
   </p>
 
       ${hospitals.map((h, index) => hospitalCard(
@@ -431,7 +500,7 @@ function showHospitalList(sortType="ai") {
     "계산중",
     h.beds ?? "N/A",
     "예측중",
-    `${index + 1}순위`,
+    rankLabels[index] ?? `${index + 1}순위`,
     h.lat,
     h.lon
 

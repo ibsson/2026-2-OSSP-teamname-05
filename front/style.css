@@ -1,5 +1,5 @@
 * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #f5f7fb; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%); background-attachment: fixed; }
 
 .full-screen-container { position: relative; width: 100%; height: 100%; }
 .map-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
@@ -26,9 +26,9 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
 .tab-item#goSymptom.active { background: #f97316; color: white; } /* 오렌지색 계열 반영 */
 
 /* 증상 입력 오버레이 */
-.overlay-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; background: #fffafb; display: flex; justify-content: center; overflow-y: auto; }
+.overlay-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%); background-attachment: fixed; display: flex; justify-content: center; align-items: flex-start; overflow-y: scroll; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
 .hidden { display: none !important; }
-.symptom-content { width: 100%; max-width: 520px; padding: 40px 20px 1100px; }
+.symptom-content { width: 100%; max-width: 520px; padding: 40px 20px calc(220px + env(safe-area-inset-bottom, 0px)); }
 
 /* 헤더 영역 */
 .header-area { text-align: center; margin-bottom: 30px; }
@@ -72,207 +72,158 @@ textarea { width: 100%; height: 120px; border: none; outline: none; background: 
 .ex-item:hover { background: #f8fafc; border-color: #e2e8f0; }
 
 .ktas-result-overlay {
-
   position: fixed;
   inset: 0;
-
-  background: rgba(15,23,42,0.45);
-
+  background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%);
   display: flex;
   justify-content: center;
-  align-items: center;
-
+  align-items: flex-start;
   z-index: 99999;
-
-  backdrop-filter: blur(6px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 40px 20px 60px;
 }
 
 .ktas-result-card {
-
   width: 100%;
-  max-width: 520px;
-
-  background: #f8fafc;
-
-  border-radius: 32px;
-
-  padding: 28px 28px 22px;
-
+  max-width: 500px;
+  background: white;
+  border-radius: 28px;
+  padding: 24px 20px 24px;
   text-align: center;
-
-  box-shadow:
-    0 30px 80px rgba(0,0,0,0.18);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
 }
 
 .ktas-icon-wrap {
-
-  width: 72px;
-  height: 72px;
-
-  margin: 0 auto 30px;
-
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
   border-radius: 999px;
-
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .ktas-icon {
-
-  font-size: 54px;
+  font-size: 44px;
   font-weight: 800;
 }
 
 .ktas-title {
-
-  font-size: 52px;
+  font-size: 40px;
   font-weight: 900;
-
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .ktas-desc {
-
-  margin-top: 10px;
-
-  font-size: 28px;
+  margin-top: 8px;
+  font-size: 16px;
   font-weight: 600;
-
   color: #475569;
 }
 
 .ktas-action-box {
-
-  width: 88%;
-
-  margin: 36px auto 0;
-
-  padding: 20px 22px;
-
-  border-radius:22px;
-
-  margin-top: 42px;
-
-  border-radius: 22px;
-
-  padding: 30px;
-
+  width: 100%;
+  margin: 16px auto 0;
+  padding: 18px 20px;
+  border-radius: 18px;
   text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ktas-action-icon {
+  font-size: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .ktas-action-title {
-
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
+  margin-bottom: 4px;
 }
 
 .ktas-action-desc {
-
-  margin-top: 14px;
-
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
 }
 
 .ktas-level-wrap {
-
-  width: 88%;
-
-  margin: 34px auto 0;
-
-  display: flex;
-  gap: 8px;
-
-  margin-top: 24px;
-
+  width: 100%;
+  margin: 16px auto 0;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .ktas-level-item {
-
   flex: 1;
   text-align: center;
 }
 
 .ktas-level-item span {
-
   display: block;
-
-  margin-top: 10px;
-
-  font-size: 16px;
+  margin-top: 7px;
+  font-size: 12px;
   font-weight: 700;
+  color: #94a3b8;
+}
 
-  color: #64748b;
+.ktas-level-item.active-item span {
+  color: #1e293b;
+  font-weight: 800;
 }
 
 .ktas-bar {
-
-  height: 16px;
+  height: 10px;
   border-radius: 999px;
+  opacity: 0.4;
+  transition: 0.2s;
 }
 
-.ktas-bar.red {
-  background: #fca5a5;
+.ktas-bar.active-level {
+  height: 14px;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  transform: none;
 }
 
-.ktas-bar.orange {
-  background: #fdba74;
-}
-
-.ktas-bar.yellow {
-  background: #fde68a;
-}
-
-.ktas-bar.green {
-  background: #34d399;
-}
-
-.ktas-bar.blue {
-  background: #93c5fd;
-}
+.ktas-bar.red { background: #f87171; }
+.ktas-bar.orange { background: #fb923c; }
+.ktas-bar.yellow { background: #fbbf24; }
+.ktas-bar.green { background: #34d399; }
+.ktas-bar.blue { background: #60a5fa; }
 
 .hospital-btn {
-
-  width: 88%;
-
-  margin: 24px auto 0;
-
+  width: 100%;
+  margin: 20px auto 0;
   display: block;
-
   border: none;
-  border-radius: 24px;
-
+  border-radius: 18px;
   padding: 18px;
-
   color: white;
-
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 900;
-
   cursor: pointer;
-
   transition: 0.25s;
+  background: linear-gradient(90deg, #10b981, #059669);
+  box-shadow: 0 8px 20px rgba(16,185,129,0.3);
 }
 
 .hospital-btn:hover {
-
   transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16,185,129,0.4);
 }
 
 .ktas-footer {
-
-  margin-top: 18px;
-
+  margin-top: 14px;
   line-height: 1.6;
-
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .hospital-list-overlay {
@@ -280,9 +231,11 @@ textarea { width: 100%; height: 120px; border: none; outline: none; background: 
   position: fixed;
   inset: 0;
 
-  background: #f8fafc;
+  background: linear-gradient(160deg, #fff5f5 0%, #fef3f0 40%, #f0fdf4 100%);
+  background-attachment: fixed;
 
   overflow-y: auto;
+  overscroll-behavior: contain;
 
   z-index: 999999;
 }
@@ -716,11 +669,167 @@ textarea { width: 100%; height: 120px; border: none; outline: none; background: 
 }
 
 .hospital-sort-btn.active {
-
   background: white;
-
-  color: #2563eb;
-
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.08);
+  color: #ef4444;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
 }
+
+
+/* AI 분석 입력 증상 섹션 */
+.ai-symptom-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ai-symptom-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.ai-symptom-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+mark.symptom-highlight {
+  background: #fef9c3;
+  color: #854d0e;
+  border-radius: 4px;
+  padding: 1px 3px;
+  font-weight: 800;
+}
+
+.keyword-badge-wrap {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.keyword-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 보수적 상향 조정 박스 */
+.ktas-adjusted-box {
+  width: 100%;
+  margin: 14px auto 0;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.ktas-adjusted-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.adjusted-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.adjusted-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}
+
+.adjusted-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.adjusted-reason {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #a16207;
+  font-weight: 600;
+  line-height: 1.5;
+  padding-left: 2px;
+}
+
+/* 추천 진료과 박스 */
+.ktas-dept-box {
+  width: 100%;
+  margin: 12px auto 0;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.ktas-dept-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dept-icon {
+  font-size: 15px;
+}
+
+.dept-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #166534;
+}
+
+.dept-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dept-tag {
+  background: white;
+  color: #166534;
+  border: 1.5px solid #86efac;
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dept-confidence {
+  font-size: 11px;
+  color: #16a34a;
+  font-weight: 700;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+/* AI 분석 입력 증상 섹션 */

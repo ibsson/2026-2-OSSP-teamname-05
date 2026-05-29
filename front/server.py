@@ -88,82 +88,36 @@ def analyze():
     data = request.get_json()
 
     symptom = data.get("symptom", "")
-    target=data.get("target","")
+    target = data.get("target", "")
 
-    """
-    나중에 사용할 AI 서버 호출 코드
+    target_label = "소아" if target == "pediatric" else "성인"
+    symptom_with_target = f"({target_label}) {symptom}"
 
     ai_res = requests.post(
-        "http://127.0.0.1:8000/ktas",
-        json={
-            "symptom": symptom,
-            "target": target
-        }
+        "http://127.0.0.1:8000/predict",
+        json={"symptom_text": symptom_with_target}
     )
-
     ai_data = ai_res.json()
 
-    if ai_data["status"] == "recall":
-
-        return jsonify({
-            "status": "recall",
-            "message": ai_data["message"]
-        })
-
-    ktas = ai_data["ktas"]
-    """
-
-    # recall 테스트용
-    if symptom == "recall":
-
-        return jsonify({
-            "status": "recall",
-            "message": "증상을 더 자세히 입력해주세요."
-        })
-
-    # 테스트용 KTAS 레벨
-    ktas = 2
-
-    # KTAS별 텍스트
     ktas_map = {
-
-        1: {
-            "level_text": "소생",
-            "message": "즉각적인 생명 구조가 필요합니다.",
-            "action": "즉시 응급실 및 소생 처치 필요"
-        },
-
-        2: {
-            "level_text": "응급",
-            "message": "빠른 응급 처치가 필요합니다.",
-            "action": "가까운 응급실 방문 권장"
-        },
-
-        3: {
-            "level_text": "긴급",
-            "message": "빠른 진료가 필요합니다.",
-            "action": "응급실 또는 야간진료 병원 방문"
-        },
-
-        4: {
-            "level_text": "준긴급",
-            "message": "증상 관찰이 필요합니다.",
-            "action": "증상 지속 시 병원 방문을 고려하세요"
-        },
-
-        5: {
-            "level_text": "비응급",
-            "message": "응급 가능성은 낮습니다.",
-            "action": "일반 외래 진료를 권장합니다"
-        }
+        1: {"level_text":"소생","message":"즉각적인 생명 구조가 필요합니다.","action":"즉시 응급실 및 소생 처치 필요"},
+        2: {"level_text":"응급","message":"빠른 응급 처치가 필요합니다.","action":"가까운 응급실 방문 권장"},
+        3: {"level_text":"긴급","message":"빠른 진료가 필요합니다.","action":"응급실 또는 야간진료 병원 방문"},
+        4: {"level_text":"준긴급","message":"증상 관찰이 필요합니다.","action":"증상 지속 시 병원 방문을 고려하세요"},
+        5: {"level_text":"비응급","message":"응급 가능성은 낮습니다.","action":"일반 외래 진료를 권장합니다"},
     }
+    ktas = ai_data["ktas_level"]
 
-    result = {
+    return jsonify({
         "ktas": ktas,
-        **ktas_map[ktas]
-    }
-
-    return jsonify(result)
+        **ktas_map[ktas],
+        "adjusted":           ai_data.get("adjusted", False),
+        "original_level":     ai_data.get("original_level"),
+        "adjusted_reason":    ai_data.get("adjusted_reason"),
+        "highlight_keywords": ai_data.get("highlight_keywords", []),
+        "dept":               ai_data.get("dept"),
+        "dept_confidence":    ai_data.get("dept_confidence"),
+    })
     
 if __name__ == "__main__":
     app.run(debug=True)
